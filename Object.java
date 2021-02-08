@@ -1,29 +1,25 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Object {
+
+
 
     private final int rows = 10;
     private final int columns = 10;
     private int[][] board;
     private int[][] snake;
     private int[][] ladder;
-    Map<Player, Integer> playerPos;
     List<Player> players;
 
     public Object(List<Player> players) {
-        this.playerPos = new HashMap<Player, Integer>();
-        for (Player player : players)
-            this.playerPos.put(player, 0);
 
         board = new int[rows][columns];
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
                 board[i][j] = i * rows + j + 1;
             }
-            setLadder();
-            setSnake();
+        setLadder();
+        setSnake();
     }
 
 
@@ -72,67 +68,62 @@ public class Object {
 
 
     public boolean playerMove(Player player, int roll) {
-        int pos = playerPos.get(player);
-        pos += roll;
-        System.out.println(player + " landed in " + pos);
-        if (pos == 100) {
-            playerPos.put(player, 100);
+
+        int currentPosition = player.getPlayerPosition();
+        player.setPlayerPosition(currentPosition + roll);
+        System.out.println(player +" landed in " + player.getPlayerPosition());
+
+        if (player.getPlayerPosition() == 100) {
+
             return true;
         } else {
-            if (pos < 100) {
+            if (player.getPlayerPosition() < 100) {
                 for (int i = 0; i < 8; i++)
-                    if (snake[i][0] == pos) {
-                        pos = snake[i][1];
-                        if (pos == 100) {
-                            playerPos.put(player, 100);
+                    if (snake[i][0] == player.getPlayerOrd()) {
+                        player.setPlayerPosition(snake[i][1]);
+                        System.out.println(player + " encountered a snake and fell " + (snake[i][0] - snake[i][1]) + " steps back to " + snake[i][1]);
+
+                        return false;
+                    }
+                for (int i = 0; i < 9; i++)
+                    if (ladder[i][0] == player.getPlayerPosition()) {
+                        player.setPlayerPosition(ladder[i][1]);
+                        if (player.getPlayerPosition() == 100) {
+                            System.out.println(player + " found a ladder and climbed " + (ladder[i][1] - ladder[i][0]) + " steps up to " + ladder[i][1]);
                             return true;
                         } else {
-                            playerPos.put(player, pos);
-
-                            System.out.println(player + " encountered a snake and fell " + (snake[i][0] - snake[i][1]) + " steps back to " + snake[i][1]);
+                            System.out.println(player + " found a ladder and climbed " + (ladder[i][1] - ladder[i][0]) + " steps up to " + ladder[i][1]);
 
                             return false;
                         }
                     }
-                        for (int i = 0; i < 9; i++)
-                            if (ladder[i][0] == pos) {
-                                pos = ladder[i][1];
-                                playerPos.put(player, pos);
+            } else if (player.getPlayerPosition() > 100) {
+                player.setPlayerPosition(100 - (player.getPlayerPosition()-100));
+                System.out.println(player + " moved past the map! Move back to " + player.getPlayerPosition());
+                for (int i = 0; i < 8; i++)
+                    if (snake[i][0] == player.getPlayerPosition()) {
+                        player.setPlayerPosition(snake[i][1]);
+                        player.getPlayerPosition();
+                        System.out.println(player + " encountered a snake and fell " + (snake[i][0] - snake[i][1]) + " steps back to " + snake[i][1]);
 
-                                System.out.println(player + " found a ladder and climbed " + (ladder[i][1]- ladder[i][0]) + " steps up to " + ladder[i][1]);
+                        return false;
+                    }
+                for (int i = 0; i < 9; i++)
+                    if (ladder[i][0] == player.getPlayerPosition()) {
+                        player.setPlayerPosition(ladder[i][1]);
+                        System.out.println(player + " found a ladder and climbed " + (ladder[i][0] - ladder[i][1]) + " steps up to " + ladder[i][1]);
 
-                                return false;
-                            }
-                    } else if (pos > 100) {
-                        pos = 100 - (pos - 100);
-                        System.out.println(player + " moved past the map! Move back to " + pos);
-                        for (int i = 0; i < 8; i++)
-                            if (snake[i][0] == pos) {
-                                pos = snake[i][1];
-                                playerPos.put(player, pos);
-
-                                System.out.println(player + " encountered a snake and fell " + (snake[i][0] - snake[i][1]) + " steps back to " + snake[i][1]);
-
-                                return false;
-                            }
-                        for (int i = 0; i < 9; i++)
-                            if (ladder[i][0] == pos) {
-                                pos = ladder[i][1];
-                                playerPos.put(player, pos);
-
-                                System.out.println(player + " found a ladder and climbed " + (ladder[i][0] - ladder[i][1]) + " steps up to " + ladder[i][1]);
-
-                                return false;
-                            }
+                        return false;
+                    }
 
             }
-                playerPos.put(player, pos);
-                return false;
-            }
-
-
+            return false;
         }
+
+
     }
+
+}
 
 
 

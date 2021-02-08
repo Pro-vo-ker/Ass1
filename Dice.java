@@ -11,6 +11,6 @@ public class Dice {
 
     public int flipDice()
     {
-        return (rnd.nextInt(7) );
+        return (rnd.nextInt(6) + 1 );
     }
 }
